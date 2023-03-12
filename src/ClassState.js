@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Loading } from './loading';
 //trabajar con props en  componentes creados como clases
 
 class ClassState extends React.Component {
@@ -9,6 +9,28 @@ class ClassState extends React.Component {
         super(props);
         this.state = {
             error: false,
+            loading: false
+        }
+    }
+
+    // componentWillMount() {
+
+    // }
+
+    // componentDidMount(){
+
+    // }
+
+    componentDidUpdate() {
+        console.log('actualizacion');
+        if(this.state.loading) {
+            setTimeout(() => {
+                console.log('haciendo validacion');
+    
+                this.setState({loading: false});
+                
+                console.log('terminando validacion');
+            }, 3000);
         }
     }
     render() {
@@ -22,10 +44,15 @@ class ClassState extends React.Component {
                  <p>El código de seguridad es incorrecto</p>
                 )}
 
+                {this.state.loading && (
+                 <Loading/>
+                )}
+
+
                 <input placeholder='Código de seguridad' />
                 <button
                 onClick={() => 
-                    this.setState(prevState => ({ error: !prevState.error }))
+                    this.setState({loading: true})
                 }
                 >Comprobar</button>
             </div>
