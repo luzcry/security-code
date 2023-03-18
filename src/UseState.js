@@ -1,72 +1,124 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 
 const SECURITY_CODE = 'paradigma';
 
 function UseState({ name }) {
     const [state, setState] = React.useState({
-        value: '',
-        error: false,
-        loading: false
+        value:'',
+        error:false,
+        loading:false,
+        deleted: false,
+        confirmed: false,
     })
 
-    React.useEffect(() => {
-        console.log('empezando el efecto');
+    console.log(state);
 
-        if(!!state.loading) {
-            setTimeout(() => {
-                console.log('haciendo validacion');
-    
-                if(state.value === SECURITY_CODE) {
-                    setState({
+    const handleChange = (event)=>{
+        setState({ 
+            ...state,
+            value: event.target.value,
+        });
+        console.log(event.target.value);
+    }
+
+    React.useEffect(()=>{
+        console.log('Empezando el efecto');
+        if(state.loading){
+            // setError(false);
+            setTimeout(()=>{
+                console.log("Haciendo la validación xd");
+                if(state.value === SECURITY_CODE){
+                    setState({ 
                         ...state,
-                        error: false,
-                        loading: false,
-                    })
-                } else {
-                    setState({
-                        error: true,
-                        loading: false,
-                    })
+                        error: false, 
+                        loading: false ,
+                        confirmed: true,
+                    });
+                }else{
+                    setState({ 
+                        ...state,
+                        error: true, 
+                        loading: false 
+                    });
                 }
-
-                console.log('terminando validacion');
-            }, 3000);
+                console.log("Terminando la validación");
+            },1500);
         }
-        console.log('terminando efecto')
-    }, [state.loading]);
-      
-    return (
-        <div>
-            <h2>Eliminar {name}</h2>
-            <p>Por favor escribe el código de seguridad</p>
+        console.log('Terminando el efecto');
+    },[state.loading]);
 
-            {state.error && (
-                 <p>El código de seguridad es incorrecto</p>
-            )}
-            {state.loading && (
-                 <p>Cargando...</p>
-            )}
-            <input placeholder='Código de seguridad'
-                value={state.value}
-                onChange={(event) => {
-                    setState({
-                        ...state,
-                        value: event.target.value,
-                    })
-                }}
-            />
-           <button
-             onClick={() => {
-                setState({
-                    ...state,
-                    loading: true,
-                    error: false
-                })
-            }}>
-                Check
-            </button>
-        </div>
-    )
+    if(!state.deleted && !state.confirmed){
+        return (
+            <div>
+                <h2>Eliminar {name}</h2>
+                <p>Por favor, escriba el código de seguridad.</p>
+    
+                {(state.error && !state.loading ) && (
+                    <p>El código es es incorrecto</p>
+                )}
+    
+                {state.loading && (
+                    <p>Cargando ...</p>
+                )}
+    
+                <input 
+                    type='text' 
+                    placeholder='código de seguridad'
+                    value={state.value}
+                    onChange={handleChange}
+                />
+                <button
+                    // onClick={()=>setError(!error)}
+                    onClick={()=>{
+                        // setError(false);
+                        setState({ 
+                            ...state,
+                            loading: true 
+                        });
+                    }}
+                >Comprobar</button>
+            </div>
+        );
+    }else if(state.confirmed && !state.deleted){
+        return(
+            <React.Fragment>
+                <p>¿Seguro que quieres eliminar UseState?</p>
+                <button
+                    onClick={()=>{
+                        setState({
+                            ...state,
+                            deleted: true,
+                        })
+                    }}
+                >Si, eliminar</button>
+                <button
+                    onClick={()=>{
+                        setState({
+                            ...state,
+                            confirmed: false,
+                            value:'',
+                        })
+                    }}
+                >No, volver</button>
+            </React.Fragment>
+        )
+    } else {
+        return (
+            <React.Fragment>
+                <p>Eliminado con exito</p>
+                <button
+                    onClick={()=>{
+                        setState({
+                            ...state,
+                            confirmed: false,
+                            deleted: false,
+                            value:'',
+                        })
+                    }}
+                >Recuperar UseState</button>
+            </React.Fragment>
+        )
+    }
 }
-
 export { UseState }; 
